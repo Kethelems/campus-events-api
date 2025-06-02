@@ -29,6 +29,7 @@
 - Continuous integration with GitHub Actions
 - Type safety enforced with TypeScript to minimize errors and improve maintainability
 - Custom error handling for better user experience and efficient bug tracking
+- Tests powered by [Vitest](https://vitest.dev/) and [Supertest](https://github.com/ladjs/supertest)
 - Runtime validation with [Zod](https://zod.dev/) to ensure data quality and consistency
 - Database migrations using [node-pg-migrate](https://github.com/salsita/node-pg-migrate) for efficient database management
 - Dockerfile for easy deployment and containerization
@@ -171,7 +172,7 @@ app.post('/route', (req, res) => {
 
 ## Testing
 
-This template comes with tests powered by [Jest](https://jestjs.io) and [Supertest](https://github.com/ladjs/supertest) to ensure the quality and stability of your application through unit and integration testing.
+This template comes with tests powered by [Vitest](https://vitest.dev) and [Supertest](https://github.com/ladjs/supertest) to ensure the quality and stability of your application through unit and integration testing.
 
 ### Running tests
 

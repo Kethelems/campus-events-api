@@ -1,6 +1,5 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from '@jest/globals';
-import { z } from 'zod/v4';
-import { applyMigrations, getPool, makeQueries, Person, Queries } from '.';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { applyMigrations, getPool, makeQueries, Queries } from '.';
 import { getConfig } from '../config';
 
 describe('queries', () => {
@@ -35,7 +34,10 @@ describe('queries', () => {
 
       const people2 = await queries.getAllPeople();
       expect(people2).toHaveLength(2);
-      z.array(Person.strict()).parse(people2);
+      expect(people2).toEqual([
+        { name: 'Joe', age: 20 },
+        { name: 'John', age: 21 },
+      ]);
     });
   });
 });

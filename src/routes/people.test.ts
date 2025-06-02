@@ -1,10 +1,9 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { Express } from 'express';
 import request from 'supertest';
 import { getConfig } from '../config';
-import { applyMigrations, getPool, makeQueries, Person, Queries } from '../database';
+import { applyMigrations, getPool, makeQueries, Queries } from '../database';
 import { makeApp } from '../app';
-import { z } from 'zod/v4';
 
 describe('people router', () => {
   const config = getConfig('TEST_');
@@ -49,7 +48,10 @@ describe('people router', () => {
       expect(response2.statusCode).toBe(200);
       expect(response2.headers['content-type']).toContain('application/json');
       expect(response2.body).toHaveLength(2);
-      z.array(Person.strict()).parse(response2.body);
+      expect(response2.body).toEqual([
+        { name: 'John', age: 20 },
+        { name: 'Joe', age: 21 },
+      ]);
     });
   });
 
@@ -62,7 +64,7 @@ describe('people router', () => {
       const response = await request(app).post('/people').send({ name: 'Joe', age: 21 });
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toContain('application/json');
-      Person.strict().parse(response.body);
+      expect(response.body).toEqual({ name: 'Joe', age: 21 });
       expect(response.body).toHaveProperty('name', 'Joe');
       expect(response.body).toHaveProperty('age', 21);
 
@@ -87,8 +89,10 @@ describe('people router', () => {
         const response = await request(app).post('/people').send(body);
         expect(response.statusCode).toBe(400);
         expect(response.headers['content-type']).toContain('application/json');
-        expect(response.body).toHaveProperty('status', 400);
-        expect(response.body).toHaveProperty('message');
+        expect(response.body).toEqual({
+          status: 400,
+          message: expect.any(String),
+        });
       }
 
       // make sure nothing was added to database
@@ -102,8 +106,10 @@ describe('people router', () => {
       const response = await request(app).get('/route/not/defined');
       expect(response.statusCode).toBe(404);
       expect(response.headers['content-type']).toContain('application/json');
-      expect(response.body).toHaveProperty('status', 404);
-      expect(response.body).toHaveProperty('message');
+      expect(response.body).toEqual({
+        status: 404,
+        message: expect.any(String),
+      });
     });
   });
 });
