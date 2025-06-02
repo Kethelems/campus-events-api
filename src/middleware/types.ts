@@ -7,6 +7,6 @@ export interface ErrorBody {
 
 export interface Middleware {
   exampleLogger(req: Request, res: Response, next: NextFunction): void;
-  errorHandler(err: Error, req: Request, res: Response<ErrorBody>, next: NextFunction): Response;
+  errorHandler(err: Error, req: Request, res: Response<ErrorBody>, next: NextFunction): void;
   routeNotFound(req: Request, res: Response, next: NextFunction): void;
 }

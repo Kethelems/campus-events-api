@@ -1,4 +1,4 @@
-import { ZodError } from 'zod';
+import { ZodError } from 'zod/v4';
 import { HttpError } from '../errors';
 import { Middleware } from '.';
 
@@ -17,20 +17,18 @@ export const makeMiddleware = (): Middleware => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     errorHandler: (err, req, res, next) => {
       if (err instanceof HttpError) {
-        return res.status(err.status).send({ status: err.status, message: err.message });
+        res.status(err.status).send({ status: err.status, message: err.message });
+        return;
       } else if (err instanceof ZodError) {
         // request validation failure
         // can be improved with custom zod error messages
-        return res.status(400).send({ status: 400, message: 'Invalid request' });
-      } else {
-        // catch-all handler
-        // log unexpected errors
-        console.log(
-          `ERROR: ${new Date().toISOString()} - ${req.method} ${req.originalUrl} - `,
-          err,
-        );
-        return res.status(500).send({ status: 500, message: 'Something went wrong' });
+        res.status(400).send({ status: 400, message: 'Invalid request' });
+        return;
       }
+      // catch-all handler
+      // log unexpected errors
+      console.log(`ERROR: ${new Date().toISOString()} - ${req.method} ${req.originalUrl} - `, err);
+      res.status(500).send({ status: 500, message: 'Something went wrong' });
     },
   };
 };

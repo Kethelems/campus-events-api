@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const Config = z.object({
   port: z.number().positive(),

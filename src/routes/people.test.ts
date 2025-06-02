@@ -4,7 +4,7 @@ import request from 'supertest';
 import { getConfig } from '../config';
 import { applyMigrations, getPool, makeQueries, Person, Queries } from '../database';
 import { makeApp } from '../app';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 describe('people router', () => {
   const config = getConfig('TEST_');

@@ -63,9 +63,9 @@
    ```
    npm install
    ```
-5. Start the database services:
+5. Start the database services with Docker Compose:
    ```
-   docker-compose up -d
+   npm run db:up
    ```
 6. Start the development server:
    ```
@@ -83,6 +83,8 @@ build       # build the project using tsc
 lint        # find ESLint issues
 lint:fix    # fix ESLint issues
 test        # run tests
+db:up       # start the database services with docker compose
+db:down     # stop and remove the database services
 ```
 
 ### Default routes

@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from '@jest/globals';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { applyMigrations, getPool, makeQueries, Person, Queries } from '.';
 import { getConfig } from '../config';
 

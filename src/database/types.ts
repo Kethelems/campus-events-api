@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const Person = z.object({
   name: z.string().trim().min(1),
