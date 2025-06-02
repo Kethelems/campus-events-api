@@ -42,7 +42,7 @@
 
 ### Requirements
 
-- Node.js v16 or higher
+- Node.js v20 or higher
 - Docker
 
 ### Getting started
@@ -55,9 +55,9 @@
    ```
    cd template-node-express
    ```
-3. Copy `template.env` to `.env`:
+3. Copy `.env.example` to `.env`:
    ```
-   cp template.env .env
+   cp .env.example .env
    ```
 4. Install npm packages:
    ```

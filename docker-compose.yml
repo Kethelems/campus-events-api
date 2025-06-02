@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   postgres-dev:
-    image: postgres:14
+    image: postgres:17
     restart: always
     environment:
       POSTGRES_DB: api_dev
@@ -11,7 +9,7 @@ services:
     ports:
       - 4329:5432
   postgres-test:
-    image: postgres:14
+    image: postgres:17
     restart: always
     environment:
       POSTGRES_DB: api_test
