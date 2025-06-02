@@ -1,17 +1,23 @@
 import express, { Express } from 'express';
-import { Queries } from './database';
-import { makeMiddleware } from './middleware';
-import { makePeopleRoutes } from './routes';
+import { Queries } from './database/queries';
+import { Middleware } from './middleware';
+import { makePeopleRoutes } from './routes/people';
+import { makeHealthRoutes } from './routes/health';
 
-export function makeApp(queries: Queries): Express {
+export interface AppContext {
+  queries: Queries;
+  middleware: Middleware;
+}
+
+export function makeApp(ctx: AppContext): Express {
   const app = express();
   app.use(express.json());
 
-  const middleware = makeMiddleware();
-  app.use('/people', makePeopleRoutes(queries, middleware));
+  app.use('/health', makeHealthRoutes(ctx));
+  app.use('/people', makePeopleRoutes(ctx));
 
-  app.use(middleware.routeNotFound);
-  app.use(middleware.errorHandler);
+  app.use(ctx.middleware.routeNotFound);
+  app.use(ctx.middleware.errorHandler);
 
   return app;
 }

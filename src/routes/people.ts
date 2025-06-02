@@ -1,13 +1,12 @@
 import { Router } from 'express';
-import { makePeopleController } from '../controllers';
-import { Queries } from '../database';
-import { Middleware } from '../middleware';
+import { makePeopleController } from '../controllers/people';
+import { AppContext } from '../app';
 
-export const makePeopleRoutes = (queries: Queries, middleware: Middleware): Router => {
+export const makePeopleRoutes = (ctx: AppContext): Router => {
   const router = Router();
-  const controller = makePeopleController(queries);
+  const controller = makePeopleController(ctx);
 
-  router.get('/', middleware.exampleLogger, controller.getAllPeople);
+  router.get('/', ctx.middleware.exampleLogger, controller.getAllPeople);
   router.post('/', controller.addPerson);
 
   return router;

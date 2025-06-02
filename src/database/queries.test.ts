@@ -1,6 +1,8 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { applyMigrations, getPool, makeQueries, Queries } from '.';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { getConfig } from '../config';
+import { applyMigrations } from './migrate';
+import { getPool } from './pool';
+import { Queries, makeQueries } from './queries';
 
 describe('queries', () => {
   const config = getConfig('TEST_');
@@ -22,6 +24,40 @@ describe('queries', () => {
   afterAll(async () => {
     await applyMigrations(config.databaseUrl, 'down');
     await getPool(config.databaseUrl).end();
+  });
+
+  describe('.checkConnection', () => {
+    it('returns true when database connection is successful', async () => {
+      const result = await queries.checkConnection();
+      expect(result).toBe(true);
+    });
+
+    it('returns false when database query throws an error', async () => {
+      vi.spyOn(getPool(config.databaseUrl), 'query').mockImplementationOnce(() => {
+        throw new Error();
+      });
+
+      const result = await queries.checkConnection();
+      expect(result).toBe(false);
+    });
+
+    it('returns false when query returns unexpected results', async () => {
+      vi.spyOn(getPool(config.databaseUrl), 'query').mockImplementationOnce(() => ({
+        rows: [{ conn_test: 2 }],
+      }));
+
+      const result = await queries.checkConnection();
+      expect(result).toBe(false);
+    });
+
+    it('returns false when query returns empty results', async () => {
+      vi.spyOn(getPool(config.databaseUrl), 'query').mockImplementationOnce(() => ({
+        rows: [],
+      }));
+
+      const result = await queries.checkConnection();
+      expect(result).toBe(false);
+    });
   });
 
   describe('.getAllPeople and .addPerson', () => {

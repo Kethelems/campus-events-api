@@ -1,11 +1,9 @@
-<!-- omit from toc -->
 # Node.js API Template
 
 > A Node.js API template with Express, TypeScript and PostgreSQL
 
 [![CI](https://github.com/miikkaylisiurunen/template-node-express/actions/workflows/ci.yml/badge.svg)](https://github.com/miikkaylisiurunen/template-node-express/actions/workflows/ci.yml)
 
-<!-- omit from toc -->
 ## Table of contents
 
 - [Features](#features)
@@ -18,7 +16,6 @@
 - [Consistent error handling](#consistent-error-handling)
   - [Throwing consistent errors](#throwing-consistent-errors)
   - [Error handler middleware](#error-handler-middleware)
-  - [Handling errors in asynchronous middleware](#handling-errors-in-asynchronous-middleware)
 - [Testing](#testing)
   - [Running tests](#running-tests)
   - [Automated tests](#automated-tests)
@@ -34,7 +31,7 @@
 - Database migrations using [node-pg-migrate](https://github.com/salsita/node-pg-migrate) for efficient database management
 - Dockerfile for easy deployment and containerization
 - Dependency injection for better testability and decoupling of code components
-- Docker compose for convenient development database setup
+- Docker Compose for convenient development database setup
 - Dependabot integration for automatic npm package updates and improved security
 - Code formatting and linting with [Prettier](https://prettier.io) and [ESLint](https://eslint.org/) to improve code quality and consistency
 - Environment variable validation
@@ -91,8 +88,11 @@ db:down     # stop and remove the database services
 ### Default routes
 
 ```
-GET /people     # get all people from the database
-POST /people    # add a new person with required body properties: "name" and "age"
+GET /people         # get all people from the database
+POST /people        # add a new person with required body properties: "name" and "age"
+
+GET /health         # basic health check (api status)
+GET /health/deep    # complete health check (api status + database connection)
 ```
 
 ## Directory structure
@@ -122,53 +122,12 @@ An error handling middleware is included to handle and send consistent responses
 ```json
 {
   "status": 401,
-  "message": "Unauthorized"
+  "message": "Unauthorized",
+  "name": "HttpError"
 }
 ```
 
 You can specify your own `status` and `message` when using the custom `HttpError` class to throw errors. A catch-all error handler is also included which returns a `500` status code whenever an unhandled error is thrown.
-
-### Handling errors in asynchronous middleware
-
-As of version 4, [Express does not support promises](https://expressjs.com/en/guide/error-handling.html) natively, making it more challenging to handle errors inside asynchronous route handlers and middleware. However, you can use a `try/catch` block and call `next(error)` when an error is thrown:
-
-```js
-app.get('/route', async (req, res, next) => {
-  try {
-    // this might throw an error
-    const user = await someAsyncFunction();
-    res.send(user);
-  } catch (error) {
-    next(error);
-  }
-});
-```
-
-The application will crash if the error is not handled properly in an asynchronous middleware. If you have a lot of `async` middleware, the above approach can be repetitive. To handle this more efficiently, a wrapper function is included that automatically calls `next(error)` on errors:
-
-```js
-app.get('/route', catchAsyncError(async (req, res) => {
-  // this might throw an error
-  const user = await someAsyncFunction();
-  res.send(user);
-}));
-```
-
-The `catchAsyncError` function wraps the route handler and automatically calls `next(error)` when an error is thrown. The error is then handled by the error handling middleware. Both asynchronous middleware and route handlers are handled this way.
-
-Synchronous route handlers and middleware can still be written normally without `try/catch` or the `catchAsyncError` wrapper. Here's an example using the custom `HttpError`:
-
-```js
-app.post('/route', (req, res) => {
-  if (!req.body.name) {
-    // this will go to the error handling middleware
-    throw new HttpError(400, 'No name provided');
-  }
-  res.send(`Hello ${req.body.name}!`);
-});
-```
-
-**Note:** You can use either `catchAsyncError` or `try/catch` to handle errors. The `catchAsyncError` function is only a helper function that can make your code cleaner and more concise by removing the need to use `try/catch` in each middleware.
 
 ## Testing
 

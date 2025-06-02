@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import { z } from 'zod/v4';
 
 export const Config = z.object({
-  port: z.number().positive(),
+  port: z.coerce.number().int().positive(),
   databaseUrl: z.string(),
 });
 export type Config = z.infer<typeof Config>;
@@ -13,9 +13,8 @@ function readFromEnv(name: string, prefix?: string): string | undefined {
 
 export const getConfig = (prefix?: string): Config => {
   dotenv.config();
-  const port = readFromEnv('PORT', prefix);
   return Config.parse({
-    port: port ? parseInt(port, 10) : undefined,
+    port: readFromEnv('PORT', prefix),
     databaseUrl: readFromEnv('DATABASE_URL', prefix),
   });
 };

@@ -2,8 +2,11 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { Express } from 'express';
 import request from 'supertest';
 import { getConfig } from '../config';
-import { applyMigrations, getPool, makeQueries, Queries } from '../database';
+import { applyMigrations } from '../database/migrate';
+import { getPool } from '../database/pool';
+import { Queries, makeQueries } from '../database/queries';
 import { makeApp } from '../app';
+import { makeMiddleware } from '../middleware';
 
 describe('people router', () => {
   const config = getConfig('TEST_');
@@ -13,8 +16,9 @@ describe('people router', () => {
   // migrate up and create app before all tests
   beforeAll(async () => {
     await applyMigrations(config.databaseUrl, 'up');
+    const middleware = makeMiddleware();
     queries = makeQueries(config.databaseUrl);
-    app = makeApp(queries);
+    app = makeApp({ queries, middleware });
   });
 
   // empty database before each test
@@ -65,8 +69,6 @@ describe('people router', () => {
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toContain('application/json');
       expect(response.body).toEqual({ name: 'Joe', age: 21 });
-      expect(response.body).toHaveProperty('name', 'Joe');
-      expect(response.body).toHaveProperty('age', 21);
 
       // make sure it was added to database
       const people2 = await queries.getAllPeople();
@@ -92,6 +94,7 @@ describe('people router', () => {
         expect(response.body).toEqual({
           status: 400,
           message: expect.any(String),
+          name: expect.any(String),
         });
       }
 
@@ -109,6 +112,7 @@ describe('people router', () => {
       expect(response.body).toEqual({
         status: 404,
         message: expect.any(String),
+        name: expect.any(String),
       });
     });
   });
