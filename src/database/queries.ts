@@ -1,22 +1,27 @@
-import { Pool, QueryResult } from 'pg';
-import { getPool, Person, Queries } from '.';
 import { HttpError } from '../errors';
+import { getPool } from './pool';
+import { Person } from './types';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function query<Result extends Record<string, any> = any, Args extends any[] = any[]>(
-  pool: Pool,
-  query: string,
-  args?: Args,
-): Promise<QueryResult<Result>> {
-  return await pool.query(query, args);
+export interface Queries {
+  checkConnection(): Promise<boolean>;
+  getAllPeople(): Promise<Person[]>;
+  addPerson(person: Person): Promise<Person>;
 }
 
 export const makeQueries = (databaseUrl: string): Queries => {
   const pool = getPool(databaseUrl);
+
   return {
+    checkConnection: async () => {
+      try {
+        const { rows } = await pool.query<{ conn_test: number }>('SELECT 1 as conn_test');
+        return rows[0].conn_test === 1;
+      } catch {
+        return false;
+      }
+    },
     getAllPeople: async () => {
-      const { rows } = await query<Person>(
-        pool,
+      const { rows } = await pool.query<Person>(
         `
         SELECT name, age
         FROM people
@@ -25,8 +30,7 @@ export const makeQueries = (databaseUrl: string): Queries => {
       return rows;
     },
     addPerson: async ({ name, age }) => {
-      const { rows, rowCount } = await query<Person, [string, number]>(
-        pool,
+      const { rows, rowCount } = await pool.query<Person, [string, number]>(
         `
         INSERT INTO people (name, age)
         VALUES ($1, $2)

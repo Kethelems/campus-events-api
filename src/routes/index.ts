@@ -1,1 +1,0 @@
-export { makePeopleRoutes } from './people';

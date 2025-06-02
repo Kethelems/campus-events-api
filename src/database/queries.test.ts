@@ -1,7 +1,8 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from '@jest/globals';
-import { z } from 'zod';
-import { applyMigrations, getPool, makeQueries, Person, Queries } from '.';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { getConfig } from '../config';
+import { applyMigrations } from './migrate';
+import { getPool } from './pool';
+import { Queries, makeQueries } from './queries';
 
 describe('queries', () => {
   const config = getConfig('TEST_');
@@ -25,6 +26,40 @@ describe('queries', () => {
     await getPool(config.databaseUrl).end();
   });
 
+  describe('.checkConnection', () => {
+    it('returns true when database connection is successful', async () => {
+      const result = await queries.checkConnection();
+      expect(result).toBe(true);
+    });
+
+    it('returns false when database query throws an error', async () => {
+      vi.spyOn(getPool(config.databaseUrl), 'query').mockImplementationOnce(() => {
+        throw new Error();
+      });
+
+      const result = await queries.checkConnection();
+      expect(result).toBe(false);
+    });
+
+    it('returns false when query returns unexpected results', async () => {
+      vi.spyOn(getPool(config.databaseUrl), 'query').mockImplementationOnce(() => ({
+        rows: [{ conn_test: 2 }],
+      }));
+
+      const result = await queries.checkConnection();
+      expect(result).toBe(false);
+    });
+
+    it('returns false when query returns empty results', async () => {
+      vi.spyOn(getPool(config.databaseUrl), 'query').mockImplementationOnce(() => ({
+        rows: [],
+      }));
+
+      const result = await queries.checkConnection();
+      expect(result).toBe(false);
+    });
+  });
+
   describe('.getAllPeople and .addPerson', () => {
     it('gets all people and adds to the database', async () => {
       const people1 = await queries.getAllPeople();
@@ -35,7 +70,10 @@ describe('queries', () => {
 
       const people2 = await queries.getAllPeople();
       expect(people2).toHaveLength(2);
-      z.array(Person.strict()).parse(people2);
+      expect(people2).toEqual([
+        { name: 'Joe', age: 20 },
+        { name: 'John', age: 21 },
+      ]);
     });
   });
 });
