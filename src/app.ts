@@ -12,6 +12,7 @@ export interface AppContext {
 export function makeApp(ctx: AppContext): Express {
   const app = express();
   app.use(express.json());
+  app.use(ctx.middleware.logger);
 
   app.use('/health', makeHealthRoutes(ctx));
   app.use('/people', makePeopleRoutes(ctx));

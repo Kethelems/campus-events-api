@@ -18,6 +18,8 @@
     "express": "^5.1.0",
     "node-pg-migrate": "^7.9.1",
     "pg": "^8.16.0",
+    "pino": "^9.7.0",
+    "pino-http": "^10.4.0",
     "zod": "^3.25.48"
   },
   "devDependencies": {

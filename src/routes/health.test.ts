@@ -7,6 +7,9 @@ import { getPool } from '../database/pool';
 import { Queries, makeQueries } from '../database/queries';
 import { makeApp } from '../app';
 import { makeMiddleware } from '../middleware';
+import pino from 'pino';
+
+const logger = pino({ level: 'silent' });
 
 describe('health router', () => {
   const config = getConfig('TEST_');
@@ -15,7 +18,7 @@ describe('health router', () => {
 
   beforeAll(async () => {
     await applyMigrations(config.databaseUrl, 'up');
-    const middleware = makeMiddleware();
+    const middleware = makeMiddleware(logger);
     queries = makeQueries(config.databaseUrl);
     app = makeApp({ queries, middleware });
   });

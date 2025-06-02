@@ -29,6 +29,7 @@
 - Tests powered by [Vitest](https://vitest.dev/) and [Supertest](https://github.com/ladjs/supertest)
 - Runtime validation with [Zod](https://zod.dev/) to ensure data quality and consistency
 - Database migrations using [node-pg-migrate](https://github.com/salsita/node-pg-migrate) for efficient database management
+- Basic request and error logging using [Pino](https://getpino.io/)
 - Dockerfile for easy deployment and containerization
 - Dependency injection for better testability and decoupling of code components
 - Docker Compose for convenient development database setup
