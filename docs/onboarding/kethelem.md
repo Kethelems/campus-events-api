@@ -18,5 +18,4 @@
 - curl /health e /health/deep -> status "healthy"
 
 ## Dificuldades
-- Docker Desktop precisava estar aberto antes de rodar npm run db:up
 - Lint apontou avisos de formatação de quebra de linha (CRLF do Windows), resolvidos com lint:fix
