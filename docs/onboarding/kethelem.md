@@ -10,7 +10,7 @@
 - Fork e clone do campus-events-api
 - cp .env.example .env
 - npm install (347 pacotes)
-- npm run db:up (Docker Desktop precisou estar aberto)
+- npm run db:up
 - npm run dev
 - npm test -> 13/13 testes passaram
 - npm run build -> sem erros
