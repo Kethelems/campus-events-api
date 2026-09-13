@@ -1,10 +1,9 @@
 import { makeApp } from './app';
-import { getConfig } from './config';
+import { getConfig, validateEnv } from './config';
 import { applyMigrations } from './database/migrate';
 import { makeQueries } from './database/queries';
 import { makeLogger } from './logger';
 import { makeMiddleware } from './middleware';
-import {validateEnv} from './config/env';
 
 validateEnv();
 
