@@ -54,12 +54,12 @@
    ```bash
    cd campus-events-api
    ```
-3. Copie o `.env.example` para `.env` e preencha a `DATABASE_URL`:
+3. Copie o `.env.example` para `.env`:
    ```bash
    cp .env.example .env
    ```
 
-   > **Importante:** a `DATABASE_URL` é obrigatória — a aplicação valida essa variável na inicialização e encerra o processo com um erro claro caso ela não esteja definida.
+   > **Importante:** o `.env.example` já vem com um valor padrão de `DATABASE_URL` compatível com o Docker Compose local — só troque se for usar outro banco. A aplicação valida essa variável na inicialização e encerra o processo com um erro claro caso ela não esteja definida.
 
 4. Instale as dependências:
    ```bash
@@ -73,6 +73,12 @@
    ```bash
    npm run dev
    ```
+7. Para rodar os testes:
+   ```bash
+   npm test
+   ```
+
+   > **Nota:** os testes usam um banco separado (`postgres-test`), já configurado via `TEST_DATABASE_URL` no `.env.example`. Certifique-se de que o Docker está rodando antes de executar os testes.
 
 > **Nota:** Se você alterar as credenciais do banco no `.env` ou no `docker-compose.yml`, atualize os dois arquivos com os mesmos valores, senão a aplicação não vai conseguir se conectar ao banco.
 
