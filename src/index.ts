@@ -4,6 +4,9 @@ import { applyMigrations } from './database/migrate';
 import { makeQueries } from './database/queries';
 import { makeLogger } from './logger';
 import { makeMiddleware } from './middleware';
+import {validateEnv} from './config/env';
+
+validateEnv();
 
 async function main() {
   const config = getConfig();
