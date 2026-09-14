@@ -39,3 +39,52 @@ export const canRegister = ({
     allowed: true,
   };
 };
+
+type EventInput = {
+  name?: unknown;
+  date?: unknown;
+  capacity?: unknown;
+};
+
+type ValidationResult =
+  | { valid: true }
+  | { valid: false; errors: string[] };
+
+export const validateEventInput = (
+  input: EventInput,
+): ValidationResult => {
+  const errors: string[] = [];
+
+  if (
+    typeof input.name !== 'string' ||
+    !input.name.trim()
+  ) {
+    errors.push('name is required');
+  }
+
+  if (
+    typeof input.date !== 'string' ||
+    !input.date.trim()
+  ) {
+    errors.push('date is required');
+  }
+
+  if (
+    typeof input.capacity !== 'number' ||
+    !Number.isInteger(input.capacity) ||
+    input.capacity <= 0
+  ) {
+    errors.push('capacity must be greater than zero');
+  }
+
+  if (errors.length > 0) {
+    return {
+      valid: false,
+      errors,
+    };
+  }
+
+  return {
+    valid: true,
+  };
+};
