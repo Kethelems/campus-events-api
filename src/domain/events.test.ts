@@ -26,4 +26,11 @@ describe('validateEventInput', () => {
     const result = validateEventInput(input);
     expect(result.valid).toBe(true);
   });
+
+  it('rejects capacity = 0', () => {
+    const input = { name: 'Meetup', date: '2026-10-01', capacity: 0 };
+    const result = validateEventInput(input);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('capacity must be greater than zero');
+  });
 });
