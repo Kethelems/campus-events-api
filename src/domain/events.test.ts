@@ -1,36 +1,150 @@
 import { describe, expect, it } from 'vitest';
-import { validateEventInput } from './events';
+import { canRegister } from './events';
 
-describe('validateEventInput', () => {
-  it('accepts a valid event', () => {
-    const input = { name: 'Semana Acadêmica', date: '2026-09-16', capacity: 30 };
-    const result = validateEventInput(input);
-    expect(result.valid).toBe(true);
-    expect(result.errors).toEqual([]);
+describe('canRegister', () => {
+  it('allows registration when there is an available spot', () => {
+    // Arrange
+    const capacity = 3;
+    const registrations = ['user-1'];
+    const userId = 'user-2';
+
+    // Act
+    const result = canRegister({
+      capacity,
+      registrations,
+      userId,
+    });
+
+    // Assert
+    expect(result).toEqual({
+      allowed: true,
+    });
   });
 
-  it.each([
-    [{ name: '', date: '2026-09-16', capacity: 10 }, 'name is required'],
-    [{ name: 'JS Day', capacity: 10 }, 'date is required'],
-    [{ name: 'JS Day', date: '2026-09-16', capacity: 0 }, 'capacity must be greater than zero'],
-    [{ name: 'JS Day', date: '2026-09-16', capacity: -1 }, 'capacity must be greater than zero'],
-    [{ name: 'JS Day', date: '2026-09-16', capacity: '10' }, 'capacity must be greater than zero'],
-  ])('rejects invalid event input %#', (input, expectedError) => {
-    const result = validateEventInput(input);
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContain(expectedError);
+  it('denies registration when the user is already registered', () => {
+    // Arrange
+    const capacity = 3;
+    const registrations = ['user-1', 'user-2'];
+    const userId = 'user-2';
+
+    // Act
+    const result = canRegister({
+      capacity,
+      registrations,
+      userId,
+    });
+
+    // Assert
+    expect(result).toEqual({
+      allowed: false,
+      reason: 'duplicate',
+    });
   });
 
-  it('accepts the boundary value capacity = 1', () => {
-    const input = { name: 'Meetup', date: '2026-10-01', capacity: 1 };
-    const result = validateEventInput(input);
-    expect(result.valid).toBe(true);
+  it('denies registration when the event is full', () => {
+    // Arrange
+    const capacity = 2;
+    const registrations = ['user-1', 'user-2'];
+    const userId = 'user-3';
+
+    // Act
+    const result = canRegister({
+      capacity,
+      registrations,
+      userId,
+    });
+
+    // Assert
+    expect(result).toEqual({
+      allowed: false,
+      reason: 'full',
+    });
   });
 
-  it('rejects capacity = 0', () => {
-    const input = { name: 'Meetup', date: '2026-10-01', capacity: 0 };
-    const result = validateEventInput(input);
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContain('capacity must be greater than zero');
+  it('allows registration in the last available spot', () => {
+    // Arrange
+    const capacity = 2;
+    const registrations = ['user-1'];
+    const userId = 'user-2';
+
+    // Act
+    const result = canRegister({
+      capacity,
+      registrations,
+      userId,
+    });
+
+    // Assert
+    expect(result).toEqual({
+      allowed: true,
+    });
+  });
+
+  it('denies registration when capacity is zero', () => {
+    // Arrange
+    const capacity = 0;
+    const registrations: string[] = [];
+    const userId = 'user-1';
+
+    // Act
+    const result = canRegister({
+      capacity,
+      registrations,
+      userId,
+    });
+
+    // Assert
+    expect(result).toEqual({
+      allowed: false,
+      reason: 'full',
+    });
+  });
+
+  it('throws an error when capacity is negative', () => {
+    // Arrange
+    const capacity = -1;
+    const registrations: string[] = [];
+    const userId = 'user-1';
+
+    // Act and Assert
+    expect(() =>
+      canRegister({
+        capacity,
+        registrations,
+        userId,
+      }),
+    ).toThrow('capacity must be a non-negative integer');
+  });
+
+  it('throws an error when capacity is not an integer', () => {
+    // Arrange
+    const capacity = 2.5;
+    const registrations: string[] = [];
+    const userId = 'user-1';
+
+    // Act and Assert
+    expect(() =>
+      canRegister({
+        capacity,
+        registrations,
+        userId,
+      }),
+    ).toThrow('capacity must be a non-negative integer');
+  });
+
+  it('throws an error when userId is empty', () => {
+    // Arrange
+    const capacity = 2;
+    const registrations: string[] = [];
+    const userId = '';
+
+    // Act and Assert
+    expect(() =>
+      canRegister({
+        capacity,
+        registrations,
+        userId,
+      }),
+    ).toThrow('userId must not be empty');
   });
 });
