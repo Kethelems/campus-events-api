@@ -4,9 +4,7 @@ type CanRegisterArgs = {
   userId: string;
 };
 
-type CanRegisterResult =
-  | { allowed: true }
-  | { allowed: false; reason: 'duplicate' | 'full' };
+type CanRegisterResult = { allowed: true } | { allowed: false; reason: 'duplicate' | 'full' };
 
 export const canRegister = ({
   capacity,
@@ -46,26 +44,16 @@ type EventInput = {
   capacity?: unknown;
 };
 
-type ValidationResult =
-  | { valid: true }
-  | { valid: false; errors: string[] };
+type ValidationResult = { valid: true } | { valid: false; errors: string[] };
 
-export const validateEventInput = (
-  input: EventInput,
-): ValidationResult => {
+export const validateEventInput = (input: EventInput): ValidationResult => {
   const errors: string[] = [];
 
-  if (
-    typeof input.name !== 'string' ||
-    !input.name.trim()
-  ) {
+  if (typeof input.name !== 'string' || !input.name.trim()) {
     errors.push('name is required');
   }
 
-  if (
-    typeof input.date !== 'string' ||
-    !input.date.trim()
-  ) {
+  if (typeof input.date !== 'string' || !input.date.trim()) {
     errors.push('date is required');
   }
 
