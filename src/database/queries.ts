@@ -29,9 +29,7 @@ export const makeQueries = (databaseUrl: string): Queries => {
   return {
     checkConnection: async () => {
       try {
-        const { rows } = await pool.query<{ conn_test: number }>(
-          'SELECT 1 as conn_test',
-        );
+        const { rows } = await pool.query<{ conn_test: number }>('SELECT 1 as conn_test');
 
         return rows[0].conn_test === 1;
       } catch {
@@ -51,10 +49,7 @@ export const makeQueries = (databaseUrl: string): Queries => {
     },
 
     addPerson: async ({ name, age }) => {
-      const { rows, rowCount } = await pool.query<
-        Person,
-        [string, number]
-      >(
+      const { rows, rowCount } = await pool.query<Person, [string, number]>(
         `
         INSERT INTO people (name, age)
         VALUES ($1, $2)
@@ -100,14 +95,8 @@ export const makeQueries = (databaseUrl: string): Queries => {
       return rows.map((registration) => registration.user_id);
     },
 
-    createRegistration: async ({
-      eventId,
-      userId,
-    }: Registration): Promise<void> => {
-      const { rowCount } = await pool.query<
-        Registration,
-        [string, string]
-      >(
+    createRegistration: async ({ eventId, userId }: Registration): Promise<void> => {
+      const { rowCount } = await pool.query<Registration, [string, string]>(
         `
         INSERT INTO registrations (event_id, user_id)
         VALUES ($1, $2)
